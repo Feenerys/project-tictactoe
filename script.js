@@ -1,3 +1,18 @@
+function createPlayer(_symbol) {
+  const symbol = _symbol;
+  let position = "";
+
+  const getSymbol = () => symbol;
+
+  const getPosition = () => [Math.floor(position / 3), position % 3];
+  const newPosition = () => {
+    position = prompt("Enter position on board (0-8)", "0");
+    return [Math.floor(position / 3), position % 3];
+  };
+
+  return { getSymbol, getPosition, newPosition };
+}
+
 const gameBoard = (function () {
   const board = [
     ["", "", ""],
@@ -5,26 +20,40 @@ const gameBoard = (function () {
     ["", "", ""],
   ];
 
-  const gameLogic = (player1, player2) => {};
+  const player1 = createPlayer("X");
+  const player2 = createPlayer("O");
 
-  const renderBoard = (player1, player2) => {};
+  let currentPlayer = Math.random() < 0.5 ? player1 : player2;
+  let nextPlayer = currentPlayer == player1 ? player2 : player1;
 
-  return { renderBoard };
-})();
+  function instruction(symbol, move) {
+    this.symbol = symbol;
+    this.move = move;
+  }
 
-function createPlayer(symbol) {
-  const symbol = symbol;
-  let position = "";
+  const gameLogic = () => {
+    currentPlayer.newPosition();
+    const playerMove = new instruction(
+      currentPlayer.getSymbol(),
+      currentPlayer.getPosition()
+    );
 
-  const getSymbol = () => symbol;
+    [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
 
-  const getPosition = () => position;
-  const newPosition = () => {
-    position = prompt("Enter position on board (0-8)", "0");
+    return playerMove;
   };
 
-  return { getSymbol, getPosition, newPosition };
+  const renderBoard = () => {
+    alert(board);
+    playerMove = gameLogic();
+    board[playerMove.move[0]][playerMove.move[1]] = playerMove.symbol;
+  };
+
+  const winCheck = () => true;
+  return { renderBoard, winCheck, };
+})();
+
+while (true) {
+  gameBoard.renderBoard();
 }
 
-const player1 = createPlayer("X");
-const player2 = createPlayer("O");
