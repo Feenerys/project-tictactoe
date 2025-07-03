@@ -43,17 +43,54 @@ const gameBoard = (function () {
       tile.id = i;
       tile.addEventListener("click", () => {
         currentPlayer.setPosition(tile.id);
+        const move = currentPlayer.getPosition();
         tile.textContent = currentPlayer.getSymbol();
         processTurn();
+        winCheck(move);
       });
       container.appendChild(tile);
     }
   };
-  const winCheck = () => {
-    // TODO: make win checker
-    true;
+
+  const winCheck = (position) => {
+    // given a position, check if there is a win
+    const directions = [
+      [1, 0], // up
+      [1, 1], // up right
+      [0, 1], // right
+      [-1, 1], // down right
+      [-1, 0], // down
+      [-1, -1], // down left
+      [0, -1], // left
+      [1, -1], // up left
+    ];
+
+    const [a, b] = position;
+
+    const inBounds = (x, y) =>
+      x >= 0 && y >= 0 && x < board.length && y < board[0].length;
+
+    directions.forEach((dir) => {
+      const x1 = a + dir[0];
+      const y1 = b + dir[1];
+      const x2 = a + dir[0] * 2;
+      const y2 = b + dir[1] * 2;
+
+      if (inBounds(x1, y1) && board[a][b] === board[x1][y1]) {
+        if (inBounds(x2, y2) && board[a][b] === board[x2][y2]) {
+          console.log("3 in a row, win!");
+          return true;
+        }
+      }
+    })
+    
+    return false;
+    ;
   };
-  return { renderBoard, winCheck };
+
+
+
+  return { renderBoard };
 })();
 
 gameBoard.renderBoard();
