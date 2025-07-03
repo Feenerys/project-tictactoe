@@ -26,7 +26,6 @@ const gameBoard = (function () {
   let nextPlayer = currentPlayer == player1 ? player2 : player1;
 
   const playerLabel = document.querySelector(".name");
-  playerLabel.textContent = currentPlayer.getSymbol();
 
   const processTurn = () => {
     const playerMove = currentPlayer.getPosition();
@@ -35,8 +34,13 @@ const gameBoard = (function () {
     playerLabel.textContent = currentPlayer.getSymbol();
   };
 
-  const container = document.querySelector(".board");
+  const container = document.querySelector(".container");
   const renderBoard = () => {
+    const displayBoard = document.createElement("div");
+    displayBoard.className = "board";
+    container.appendChild(displayBoard);
+
+    playerLabel.textContent = currentPlayer.getSymbol();
     for (let i = 0; i < board[0].length * board.length; i++) {
       const tile = document.createElement("div");
       tile.className = "tile";
@@ -49,9 +53,8 @@ const gameBoard = (function () {
           processTurn();
           winCheck(move);
         }
-
       });
-      container.appendChild(tile);
+      displayBoard.appendChild(tile);
     }
   };
 
@@ -85,15 +88,28 @@ const gameBoard = (function () {
           return true;
         }
       }
-    })
-    
+    });
+
     return false;
-    ;
   };
 
+  const resetBoard = () => {
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+    renderBoard();
+    for (let i = 0; i < board.length; i++) {
+      for (let j = 0; j < board[i].length; j++) {
+        board[i][j] = "";
+      }
+    }
+  };
 
+  const stopGame = () => {
+    container.style.pointerEvents = "none";
+  };
 
-  return { renderBoard };
+  return { renderBoard, resetBoard, stopGame, board };
 })();
 
 gameBoard.renderBoard();

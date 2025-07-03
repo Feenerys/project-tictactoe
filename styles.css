@@ -23,3 +23,9 @@
   gap: 12px;
 }
 
+body {
+  display: grid;
+  justify-content: center;
+  gap: 24px;
+}
+
