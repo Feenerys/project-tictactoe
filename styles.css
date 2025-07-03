@@ -1,0 +1,28 @@
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  justify-content: center;
+}
+
+.tile {
+  border: 1px solid black;
+}
+
+.container {
+  display: grid;
+  justify-content: center;
+  gap: 24px;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+}
+
+label {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 4px;
+}
