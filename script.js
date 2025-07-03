@@ -19,6 +19,8 @@ const gameBoard = (function () {
     ["", "", ""],
   ];
 
+  let totalMoves = 0;
+
   const player1 = createPlayer("X");
   const player2 = createPlayer("O");
 
@@ -30,6 +32,7 @@ const gameBoard = (function () {
   const processTurn = () => {
     const playerMove = currentPlayer.getPosition();
     board[playerMove[0]][playerMove[1]] = currentPlayer.getSymbol();
+    totalMoves += 1;
   };
 
   const nextTurn = () => {
@@ -57,7 +60,11 @@ const gameBoard = (function () {
           if (winCheck(move)) {
             stopGame();
             playerLabel.textContent = playerLabel.textContent + "\nWinner!";
-          } else {
+          } else if (totalMoves == 9) {
+            stopGame();
+            playerLabel.textContent = playerLabel.textContent + "\nDraw!";
+          } 
+          else {
             nextTurn();
           }
         }
@@ -113,6 +120,8 @@ const gameBoard = (function () {
         board[i][j] = "";
       }
     }
+    container.style.pointerEvents = "";
+    totalMoves = 0;
   };
 
   const stopGame = () => {
