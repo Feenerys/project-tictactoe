@@ -28,28 +28,26 @@ const gameBoard = (function () {
   const playerLabel = document.querySelector(".name");
   playerLabel.textContent = currentPlayer.getSymbol();
 
-  function instruction(symbol, move) {
-    this.symbol = symbol;
-    this.move = move;
-  }
-
   const gameLogic = () => {
-    const playerMove = new instruction(
-      currentPlayer.getSymbol(),
-      currentPlayer.getPosition()
-    );
+    const playerMove = currentPlayer.getPosition();
+    board[playerMove[0]][playerMove[1]] = currentPlayer.getSymbol();
 
     [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
 
     return playerMove;
   };
 
+  const boardTiles = document.querySelectorAll("#tile");
+
+  const container = document.querySelector(".board");
   const renderBoard = () => {
-    const playerMove = gameLogic();
-    
-    board[playerMove.move[0]][playerMove.move[1]] = playerMove.symbol;
-    // TODO: finish render board logic
-    console.log(board);
+    for (let i = 0; i < board[0].length * board.length; i++) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      tile.id = i;
+
+      container.appendChild(tile);
+    }
   };
 
   const submitButton = document.querySelector(".submit");
@@ -60,7 +58,11 @@ const gameBoard = (function () {
     playerLabel.textContent = currentPlayer.getSymbol();
   });
 
-  const winCheck = () => true;
+  const winCheck = () => {
+    // TODO: make win checker
+    true;
+  };
   return { renderBoard, winCheck };
 })();
 
+gameBoard.renderBoard();
