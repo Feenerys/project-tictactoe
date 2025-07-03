@@ -30,6 +30,9 @@ const gameBoard = (function () {
   const processTurn = () => {
     const playerMove = currentPlayer.getPosition();
     board[playerMove[0]][playerMove[1]] = currentPlayer.getSymbol();
+  };
+
+  const nextTurn = () => {
     [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
     playerLabel.textContent = currentPlayer.getSymbol();
   };
@@ -51,7 +54,12 @@ const gameBoard = (function () {
           const move = currentPlayer.getPosition();
           tile.textContent = currentPlayer.getSymbol();
           processTurn();
-          winCheck(move);
+          if (winCheck(move)) {
+            stopGame();
+            playerLabel.textContent = playerLabel.textContent + "\nWinner!";
+          } else {
+            nextTurn();
+          }
         }
       });
       displayBoard.appendChild(tile);
@@ -76,7 +84,7 @@ const gameBoard = (function () {
     const inBounds = (x, y) =>
       x >= 0 && y >= 0 && x < board.length && y < board[0].length;
 
-    directions.forEach((dir) => {
+    for (let dir of directions) {
       const x1 = a + dir[0];
       const y1 = b + dir[1];
       const x2 = a + dir[0] * 2;
@@ -84,14 +92,16 @@ const gameBoard = (function () {
 
       if (inBounds(x1, y1) && board[a][b] === board[x1][y1]) {
         if (inBounds(x2, y2) && board[a][b] === board[x2][y2]) {
-          console.log("3 in a row, win!");
           return true;
         }
       }
-    });
+    }
 
     return false;
   };
+
+  const resetButton = document.querySelector(".reset");
+  resetButton.addEventListener("click", () => resetBoard());
 
   const resetBoard = () => {
     while (container.firstChild) {
@@ -109,7 +119,7 @@ const gameBoard = (function () {
     container.style.pointerEvents = "none";
   };
 
-  return { renderBoard, resetBoard, stopGame, board };
+  return { renderBoard };
 })();
 
 gameBoard.renderBoard();
