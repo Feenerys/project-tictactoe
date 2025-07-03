@@ -18,9 +18,8 @@
   gap: 24px;
 }
 
-.controls {
-  display: grid;
-  grid-template-columns: 1fr auto;
+.status {
+  display: flex;
   gap: 12px;
 }
 

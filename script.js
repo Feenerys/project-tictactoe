@@ -42,11 +42,14 @@ const gameBoard = (function () {
       tile.className = "tile";
       tile.id = i;
       tile.addEventListener("click", () => {
-        currentPlayer.setPosition(tile.id);
-        const move = currentPlayer.getPosition();
-        tile.textContent = currentPlayer.getSymbol();
-        processTurn();
-        winCheck(move);
+        if (tile.textContent == "") {
+          currentPlayer.setPosition(tile.id);
+          const move = currentPlayer.getPosition();
+          tile.textContent = currentPlayer.getSymbol();
+          processTurn();
+          winCheck(move);
+        }
+
       });
       container.appendChild(tile);
     }
