@@ -28,16 +28,12 @@ const gameBoard = (function () {
   const playerLabel = document.querySelector(".name");
   playerLabel.textContent = currentPlayer.getSymbol();
 
-  const gameLogic = () => {
+  const processTurn = () => {
     const playerMove = currentPlayer.getPosition();
     board[playerMove[0]][playerMove[1]] = currentPlayer.getSymbol();
-
     [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
-
-    return playerMove;
+    playerLabel.textContent = currentPlayer.getSymbol();
   };
-
-  const boardTiles = document.querySelectorAll("#tile");
 
   const container = document.querySelector(".board");
   const renderBoard = () => {
@@ -45,19 +41,14 @@ const gameBoard = (function () {
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.id = i;
-
+      tile.addEventListener("click", () => {
+        currentPlayer.setPosition(tile.id);
+        tile.textContent = currentPlayer.getSymbol();
+        processTurn();
+      });
       container.appendChild(tile);
     }
   };
-
-  const submitButton = document.querySelector(".submit");
-  const inputBox = document.querySelector("#player-input");
-  submitButton.addEventListener("click", () => {
-    currentPlayer.setPosition(inputBox.value);
-    renderBoard();
-    playerLabel.textContent = currentPlayer.getSymbol();
-  });
-
   const winCheck = () => {
     // TODO: make win checker
     true;
