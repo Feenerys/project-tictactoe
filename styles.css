@@ -1,3 +1,8 @@
+* {
+  font-family: Charter, 'Bitstream Charter', 'Sitka Text', Cambria, serif;
+  font-weight: normal;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 60px);
@@ -28,5 +33,6 @@ body {
   display: grid;
   justify-content: center;
   gap: 24px;
+  justify-items: center;
 }
 
