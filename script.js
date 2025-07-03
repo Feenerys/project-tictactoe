@@ -5,12 +5,11 @@ function createPlayer(_symbol) {
   const getSymbol = () => symbol;
 
   const getPosition = () => [Math.floor(position / 3), position % 3];
-  const newPosition = () => {
-    position = prompt("Enter position on board (0-8)", "0");
-    return [Math.floor(position / 3), position % 3];
+  const setPosition = (_position) => {
+    position = _position;
   };
 
-  return { getSymbol, getPosition, newPosition };
+  return { getSymbol, getPosition, setPosition };
 }
 
 const gameBoard = (function () {
@@ -26,13 +25,15 @@ const gameBoard = (function () {
   let currentPlayer = Math.random() < 0.5 ? player1 : player2;
   let nextPlayer = currentPlayer == player1 ? player2 : player1;
 
+  const playerLabel = document.querySelector(".name");
+  playerLabel.textContent = currentPlayer.getSymbol();
+
   function instruction(symbol, move) {
     this.symbol = symbol;
     this.move = move;
   }
 
   const gameLogic = () => {
-    currentPlayer.newPosition();
     const playerMove = new instruction(
       currentPlayer.getSymbol(),
       currentPlayer.getPosition()
@@ -44,16 +45,22 @@ const gameBoard = (function () {
   };
 
   const renderBoard = () => {
-    alert(board);
-    playerMove = gameLogic();
+    const playerMove = gameLogic();
+    
     board[playerMove.move[0]][playerMove.move[1]] = playerMove.symbol;
+    // TODO: finish render board logic
+    console.log(board);
   };
 
-  const winCheck = () => true;
-  return { renderBoard, winCheck, };
-})();
+  const submitButton = document.querySelector(".submit");
+  const inputBox = document.querySelector("#player-input");
+  submitButton.addEventListener("click", () => {
+    currentPlayer.setPosition(inputBox.value);
+    renderBoard();
+    playerLabel.textContent = currentPlayer.getSymbol();
+  });
 
-while (true) {
-  gameBoard.renderBoard();
-}
+  const winCheck = () => true;
+  return { renderBoard, winCheck };
+})();
 
