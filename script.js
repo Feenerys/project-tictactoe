@@ -138,8 +138,7 @@ class GameBoard {
             this.playerLabel.textContent =
               this.playerLabel.textContent + "\nDraw!";
           } else {
-            this.gameLogic.nextTurn();
-            this.playerLabel.textContent = this.gameLogic.currentPlayer.symbol;
+            this.playerLabel.textContent = this.gameLogic.nextTurn();;
           }
         }
       });
