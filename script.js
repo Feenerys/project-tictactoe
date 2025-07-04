@@ -20,68 +20,36 @@ class Player {
   }
 }
 
-const gameBoard = (function () {
-  const board = [
+class GameLogic {
+  board = [
     ["", "", ""],
     ["", "", ""],
     ["", "", ""],
   ];
 
-  let totalMoves = 0;
+  constructor(player1, player2) {
+    this.player1 = new Player("X");
+    this.player2 = new Player("O");
+    this.totalMove = 0;
+    this.currentPlayer = Math.random() < 0.5 ? player1 : player2;
+    this.nextPlayer = this.currentPlayer == player1 ? player2 : player1;
+  }
 
-  const player1 = new Player("X");
-  const player2 = new Player("O");
+  processTurn() {
+    const playerMove = this.currentPlayer.position;
+    this.totalMoves += 1;
+    this.board[playerMove[0]][playerMove[1]] = this.currentPlayer.symbol;
+  }
 
-  let currentPlayer = Math.random() < 0.5 ? player1 : player2;
-  let nextPlayer = currentPlayer == player1 ? player2 : player1;
+  nextTurn() {
+    [this.currentPlayer, this.nextPlayer] = [
+      this.nextPlayer,
+      this.currentPlayer,
+    ];
+    return this.currentPlayer.symbol;
+  }
 
-  const playerLabel = document.querySelector(".name");
-
-  const processTurn = () => {
-    const playerMove = currentPlayer.position;
-    board[playerMove[0]][playerMove[1]] = currentPlayer.symbol;
-    totalMoves += 1;
-  };
-
-  const nextTurn = () => {
-    [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
-    playerLabel.textContent = currentPlayer.symbol;
-  };
-
-  const container = document.querySelector(".container");
-  const renderBoard = () => {
-    const displayBoard = document.createElement("div");
-    displayBoard.className = "board";
-    container.appendChild(displayBoard);
-
-    console.log(currentPlayer);
-    playerLabel.textContent = currentPlayer.symbol;
-    for (let i = 0; i < board[0].length * board.length; i++) {
-      const tile = document.createElement("div");
-      tile.className = "tile";
-      tile.id = i;
-      tile.addEventListener("click", () => {
-        if (tile.textContent == "") {
-          currentPlayer.position = tile.id;
-          const move = currentPlayer.position;
-          tile.textContent = currentPlayer.symbol;
-          processTurn();
-          if (winCheck(move)) {
-            stopGame();
-            playerLabel.textContent = playerLabel.textContent + "\nWinner!";
-          } else if (totalMoves == 9) {
-            stopGame();
-            playerLabel.textContent = playerLabel.textContent + "\nDraw!";
-          } else {
-            nextTurn();
-          }
-        }
-      });
-      displayBoard.appendChild(tile);
-    }
-  };
-
-  const winCheck = (position) => {
+  winCheck = (position) => {
     // given a position, check if there is a win
     const directions = [
       [1, 0], // up
@@ -97,7 +65,7 @@ const gameBoard = (function () {
     const [a, b] = position;
 
     const inBounds = (x, y) =>
-      x >= 0 && y >= 0 && x < board.length && y < board[0].length;
+      x >= 0 && y >= 0 && x < this.board.length && y < this.board[0].length;
 
     for (let dir of directions) {
       const x1 = a + dir[0];
@@ -107,10 +75,13 @@ const gameBoard = (function () {
       const x3 = a - dir[0]; // to check the opposite direction for middle input wins
       const y3 = b - dir[1];
 
-      if (inBounds(x1, y1) && board[a][b] === board[x1][y1]) {
-        if (inBounds(x2, y2) && board[a][b] === board[x2][y2]) {
+      if (inBounds(x1, y1) && this.board[a][b] === this.board[x1][y1]) {
+        if (inBounds(x2, y2) && this.board[a][b] === this.board[x2][y2]) {
           return true;
-        } else if (inBounds(x3, y3) && board[a][b] === board[x3][y3]) {
+        } else if (
+          inBounds(x3, y3) &&
+          this.board[a][b] === this.board[x3][y3]
+        ) {
           return true;
         }
       }
@@ -119,28 +90,79 @@ const gameBoard = (function () {
     return false;
   };
 
-  const resetButton = document.querySelector(".reset");
-  resetButton.addEventListener("click", () => resetBoard());
-
-  const resetBoard = () => {
-    while (container.firstChild) {
-      container.removeChild(container.firstChild);
-    }
-    renderBoard();
-    for (let i = 0; i < board.length; i++) {
-      for (let j = 0; j < board[i].length; j++) {
-        board[i][j] = "";
+  resetGame() {
+    for (let i = 0; i < this.board.length; i++) {
+      for (let j = 0; j < this.board[i].length; j++) {
+        this.board[i][j] = "";
       }
     }
-    container.style.pointerEvents = "";
-    totalMoves = 0;
+    this.totalMoves = 0;
+  }
+}
+
+class GameBoard {
+  constructor(gameLogic) {
+    this.gameLogic = gameLogic;
+    this.playerLabel = document.querySelector(".name");
+    this.container = document.querySelector(".container");
+    const resetButton = document.querySelector(".reset");
+    resetButton.addEventListener("click", () => this.resetBoard());
+  }
+
+  renderBoard() {
+    const displayBoard = document.createElement("div");
+    displayBoard.className = "board";
+    this.container.appendChild(displayBoard);
+
+    this.playerLabel.textContent = this.gameLogic.currentPlayer.symbol;
+    for (
+      let i = 0;
+      i < this.gameLogic.board[0].length * this.gameLogic.board.length;
+      i++
+    ) {
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      tile.id = i;
+      tile.addEventListener("click", () => {
+        if (tile.textContent == "") {
+          this.gameLogic.currentPlayer.position = tile.id;
+          const move = this.gameLogic.currentPlayer.position;
+          tile.textContent = this.gameLogic.currentPlayer.symbol;
+          this.gameLogic.processTurn();
+          if (this.gameLogic.winCheck(move)) {
+            this.stopBoard();
+            this.playerLabel.textContent =
+              this.playerLabel.textContent + "\nWinner!";
+          } else if (this.gameLogic.totalMoves == 9) {
+            this.stopBoard();
+            this.playerLabel.textContent =
+              this.playerLabel.textContent + "\nDraw!";
+          } else {
+            this.gameLogic.nextTurn();
+            this.playerLabel.textContent = this.gameLogic.currentPlayer.symbol;
+          }
+        }
+      });
+      displayBoard.appendChild(tile);
+    }
+  }
+
+  resetBoard = () => {
+    while (this.container.firstChild) {
+      this.container.removeChild(this.container.firstChild);
+    }
+    this.renderBoard();
+    this.gameLogic.resetGame();
+    this.container.style.pointerEvents = "";
   };
 
-  const stopGame = () => {
-    container.style.pointerEvents = "none";
+  stopBoard = () => {
+    this.container.style.pointerEvents = "none";
   };
+}
 
-  return { renderBoard };
-})();
+const player1 = new Player("X");
+const player2 = new Player("O");
 
-gameBoard.renderBoard();
+const newGame = new GameBoard(new GameLogic(player1, player2));
+newGame.renderBoard();
