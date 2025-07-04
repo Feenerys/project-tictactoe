@@ -96,9 +96,13 @@ const gameBoard = (function () {
       const y1 = b + dir[1];
       const x2 = a + dir[0] * 2;
       const y2 = b + dir[1] * 2;
+      const x3 = a - dir[0]; // to check the opposite direction for middle input wins
+      const y3 = b - dir[1];
 
       if (inBounds(x1, y1) && board[a][b] === board[x1][y1]) {
         if (inBounds(x2, y2) && board[a][b] === board[x2][y2]) {
+          return true;
+        } else if (inBounds(x3,y3) && board[a][b] === board[x3][y3]) {
           return true;
         }
       }
