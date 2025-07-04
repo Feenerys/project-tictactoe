@@ -1,15 +1,23 @@
-function createPlayer(_symbol) {
-  const symbol = _symbol;
-  let position = "";
+class Player {
+  constructor(symbol) {
+    this.symbol = symbol;
+  }
 
-  const getSymbol = () => symbol;
+  get symbol() {
+    return this._symbol;
+  }
 
-  const getPosition = () => [Math.floor(position / 3), position % 3];
-  const setPosition = (_position) => {
-    position = _position;
-  };
+  set symbol(value) {
+    this._symbol = value;
+  }
 
-  return { getSymbol, getPosition, setPosition };
+  get position() {
+    return [Math.floor(this._position / 3), this._position % 3];
+  }
+
+  set position(value) {
+    this._position = value;
+  }
 }
 
 const gameBoard = (function () {
@@ -21,8 +29,8 @@ const gameBoard = (function () {
 
   let totalMoves = 0;
 
-  const player1 = createPlayer("X");
-  const player2 = createPlayer("O");
+  const player1 = new Player("X");
+  const player2 = new Player("O");
 
   let currentPlayer = Math.random() < 0.5 ? player1 : player2;
   let nextPlayer = currentPlayer == player1 ? player2 : player1;
@@ -30,14 +38,14 @@ const gameBoard = (function () {
   const playerLabel = document.querySelector(".name");
 
   const processTurn = () => {
-    const playerMove = currentPlayer.getPosition();
-    board[playerMove[0]][playerMove[1]] = currentPlayer.getSymbol();
+    const playerMove = currentPlayer.position;
+    board[playerMove[0]][playerMove[1]] = currentPlayer.symbol;
     totalMoves += 1;
   };
 
   const nextTurn = () => {
     [currentPlayer, nextPlayer] = [nextPlayer, currentPlayer];
-    playerLabel.textContent = currentPlayer.getSymbol();
+    playerLabel.textContent = currentPlayer.symbol;
   };
 
   const container = document.querySelector(".container");
@@ -46,16 +54,17 @@ const gameBoard = (function () {
     displayBoard.className = "board";
     container.appendChild(displayBoard);
 
-    playerLabel.textContent = currentPlayer.getSymbol();
+    console.log(currentPlayer);
+    playerLabel.textContent = currentPlayer.symbol;
     for (let i = 0; i < board[0].length * board.length; i++) {
       const tile = document.createElement("div");
       tile.className = "tile";
       tile.id = i;
       tile.addEventListener("click", () => {
         if (tile.textContent == "") {
-          currentPlayer.setPosition(tile.id);
-          const move = currentPlayer.getPosition();
-          tile.textContent = currentPlayer.getSymbol();
+          currentPlayer.position = tile.id;
+          const move = currentPlayer.position;
+          tile.textContent = currentPlayer.symbol;
           processTurn();
           if (winCheck(move)) {
             stopGame();
@@ -63,8 +72,7 @@ const gameBoard = (function () {
           } else if (totalMoves == 9) {
             stopGame();
             playerLabel.textContent = playerLabel.textContent + "\nDraw!";
-          } 
-          else {
+          } else {
             nextTurn();
           }
         }
@@ -102,7 +110,7 @@ const gameBoard = (function () {
       if (inBounds(x1, y1) && board[a][b] === board[x1][y1]) {
         if (inBounds(x2, y2) && board[a][b] === board[x2][y2]) {
           return true;
-        } else if (inBounds(x3,y3) && board[a][b] === board[x3][y3]) {
+        } else if (inBounds(x3, y3) && board[a][b] === board[x3][y3]) {
           return true;
         }
       }
